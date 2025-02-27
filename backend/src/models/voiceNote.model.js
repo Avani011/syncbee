@@ -1,4 +1,5 @@
 import mongoose, {Schema} from 'mongoose';
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const voiceNoteSchema = new Schema({
     title: {
@@ -15,5 +16,7 @@ const voiceNoteSchema = new Schema({
         required: true
     }
 }, {timestamps: true})
+
+voiceNoteSchema.plugin(mongooseAggregatePaginate);
 
 export const VoiceNote = mongoose.model("VoiceNote", voiceNoteSchema);

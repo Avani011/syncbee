@@ -1,4 +1,5 @@
 import mongoose, {Schema} from 'mongoose';
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const taskHistorySchema = new Schema({
     owner: {
@@ -25,5 +26,7 @@ const taskHistorySchema = new Schema({
         default: 0
     }
 }, {timestamps: true})
+
+taskHistorySchema.plugin(mongooseAggregatePaginate);
 
 export const TaskHistory = mongoose.model("TaskHistory", taskHistorySchema);
