@@ -52,6 +52,22 @@ const taskSchema = new Schema({
    }
 )
 
+taskSchema.pre("save", function(next){
+    if(this.isModified("dueDate") || this.isNew){
+        const now = new Date()
+        const due = new Date(this.dueDate)
+
+        if(this.isCompleted){
+            this.status = "completed"
+        }else if(due < now){
+            this.status = "incomplete"
+        }else{
+            this.status = "upcoming"
+        }
+    }
+    next()
+})
+
 taskSchema.plugin(mongooseAggregatePaginate);
 
 export const Task = mongoose.model("Task", taskSchema);

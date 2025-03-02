@@ -1,8 +1,8 @@
 import {asyncHandler} from '../utils/asyncHandler.js';
-import {ApiError} from '../utils/ApiError.js';
 import {User} from "../models/user.model.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
+import { ApiError } from '../utils/apiError.js';
 import jwt from "jsonwebtoken";
 
 
@@ -79,11 +79,15 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const {email, password, username} = req.body
 
-    if(!email || !username){
+    if(!(email || username)){
         throw new ApiError(400, "Please provide email or username")
     }
 
+    console.log(username, email);
+
     const user = await User.findOne({$or: [{email}, {username}]})
+
+    console.log("User Found in DB: ", user);
 
     if(!user){
         throw new ApiError(404, "User not found")
@@ -167,13 +171,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             process.env.REFRESH_TOKEN_SECRET
         )
     
-        const user = User.findById(decodedToken?._id)
+        const user = await User.findById(decodedToken?._id)
     
         if(!user){
             throw new ApiError(401, "Unauthorised Request")
         }
     
-        if (incomingRefreshToken !== user.refreshTokn) {
+        if (incomingRefreshToken !== user.refreshToken) {
             throw new ApiError(401, "Refresh Tokn is expired or used")
         }
     
@@ -245,7 +249,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please fill in all fields")
     }
 
-    User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
