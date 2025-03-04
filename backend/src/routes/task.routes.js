@@ -11,9 +11,9 @@ router.route("/task-by-status").get(verifyJWT, getTaskByStatus);
 router.route("/calendar-view").get(verifyJWT, getCalendarTasks);
 
 //secured routes
-router.route("/update-task").put(verifyJWT, ownership(Task, "taskId"), updateTask);
-router.route("/delete-task").delete(verifyJWT, ownership(Task, "taskId"), deleteTask);
-router.route("/mark-task-completed").patch(verifyJWT, ownership(Task, "taskId"), markTaskAsComplete);
-router.route("/reschedule-task").patch(verifyJWT, ownership(Task, "taskId"), rescheduleTask);
+router.route("/update-task/:taskId").put(verifyJWT, ownership(Task, "taskId"), updateTask);
+router.route("/delete-task/:taskId").delete(verifyJWT, ownership(Task, "taskId"), deleteTask);
+router.route("/mark-task-completed/:taskId").patch(verifyJWT, ownership(Task, "taskId"), markTaskAsComplete);
+router.route("/reschedule-task/:taskId").patch(verifyJWT, ownership(Task, "taskId"), rescheduleTask);
 
-export default router;
+export default router; 

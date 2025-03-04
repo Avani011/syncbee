@@ -77,17 +77,13 @@ const registerUser = asyncHandler(async (req, res) => {
 })
 
 const loginUser = asyncHandler(async (req, res) => {
-    const {email, password, username} = req.body
+    const {email, password, username, id} = req.body
 
     if(!(email || username)){
         throw new ApiError(400, "Please provide email or username")
     }
 
-    console.log(username, email);
-
     const user = await User.findOne({$or: [{email}, {username}]})
-
-    console.log("User Found in DB: ", user);
 
     if(!user){
         throw new ApiError(404, "User not found")
@@ -243,41 +239,31 @@ const getCurrentUser = asyncHandler(async(req, res) =>{
 })
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const {fullName, email, phone, username} = req.body
+    const { fullName, email, phone, username } = req.body;
 
-    if(!fullName || !email || !phone || !username){
-        throw new ApiError(400, "Please fill in all fields")
+    if (!fullName && !email && !phone && !username) {
+        throw new ApiError(400, "Please provide at least one field to update");
     }
+
+    // Dynamically build the update object
+    const updateFields = {};
+    if (fullName) updateFields.fullName = fullName;
+    if (email) updateFields.email = email;
+    if (phone) updateFields.phone = phone;
+    if (username) updateFields.username = username;
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
-        {
-            $set: {
-                fullName: fullName,
-                email: email,
-                phone: phone,
-                username: username
-            }
-        },
-        {
-            new: true
-        }
-    ).select(
-        "-password"
-    )
+        { $set: updateFields }, // Only update the provided fields
+        { new: true } // Return the updated user
+    ).select("-password");
 
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            user,
-            "User Details Updated Successfully"
-        )
-    )
-})
+    return res.status(200).json(
+        new ApiResponse(200, user, "User Details Updated Successfully")
+    );
+});
 
-const updateAvatar = asyncHandler(async (req, res) => {
+const updateAvatar = asyncHandler(async (req, res) => {   
     const avatarLocalPath = req.file?.path
 
     if(!avatarLocalPath){

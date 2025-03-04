@@ -18,8 +18,10 @@ app.use(cookieParser())
 
 import userRouter from "./routes/user.routes.js";
 import taskRouter from "./routes/task.routes.js";
+import subTaskRouter from './routes/subTask.routes.js';
 
 app.use("/api/v2/user", userRouter)
 app.use("/api/v2/task", taskRouter)
+app.use("/api/v2/subtask", subTaskRouter)
 
 export {app}

@@ -2,15 +2,18 @@ import {asyncHandler} from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/apiError.js";
 import {Task} from "../models/task.model.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
 
 
 //Created Task
 const createTask = asyncHandler(async (req, res) => {
-    const {title, description, dueDate, color, category, priority} = req.body
-    const {userId} = req.user
+    const { title, description, dueDate, color, category, priority } = req.body;
+
+    // ✅ Correctly extract user ID
+    const userId = req.user._id;
 
     if (!title || !dueDate || !category || !priority) {
-        throw new ApiError(400, "Please fill in all required fields")
+        throw new ApiError(400, "Please fill in all required fields");
     }
 
     const task = await Task.create({
@@ -20,58 +23,47 @@ const createTask = asyncHandler(async (req, res) => {
         color,
         category,
         priority,
-        owner: userId
-    })
+        owner: userId // ✅ Assign correct owner
+    });
 
-    return res
-    .status(201)
-    .json(
+    return res.status(201).json(
         new ApiResponse(
             201,
             task,
             "Task Created Successfully"
         )
-    )
-})
+    );
+});
 
 //Update Task
-const updateTask = asyncHandler(async(req, res) => {
-    const {taskId} = req.params
-    const {title, description, dueDate, color, category, priority} = req.body
+const updateTask = asyncHandler(async (req, res) => {
+    const { taskId } = req.params;
+    const updateFields = req.body; // Get only provided fields
 
-    if(!mongoose.Types.ObjectId.isValid(taskId)){
-        throw new ApiError(400, "Invalid Task ID")
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+        throw new ApiError(400, "Invalid Task ID");
     }
 
+    // ✅ Only update provided fields using `$set`
     const task = await Task.findByIdAndUpdate(
         taskId,
-        {
-            title,
-            description,
-            dueDate,
-            color,
-            category,
-            priority
-        },
-        {
-            new: true
-        }
-    )
+        { $set: updateFields }, // ✅ Updates only provided fields
+        { new: true }
+    );
 
-    if(!task){
-        throw new ApiError(404, "Task not found")
+    if (!task) {
+        throw new ApiError(404, "Task not found");
     }
 
-    return res
-    .status(200)
-    .json(
+    return res.status(200).json(
         new ApiResponse(
             200,
             task,
             "Task Updated Successfully"
         )
-    )
-})
+    );
+});
+
 
 //Delete Task
 const deleteTask = asyncHandler(async(req, res) => {
@@ -135,7 +127,7 @@ const markTaskAsComplete = asyncHandler(async (req, res) => {
 //Fetch Task by Status
 const getTaskByStatus = asyncHandler(async(req, res) => {
     const {userId} = req.user
-    const {status} = req.query
+    const {status, category, priority, page, limit} = req.query
 
     if(!["active", "completed", "incomplete", "upcoming"].includes(status)){
         throw new ApiError(400, "Invalid Status Type")
@@ -219,7 +211,7 @@ const rescheduleTask = asyncHandler(async(req, res) => {
 //Fetch Calendar Tasks
 const getCalendarTasks = asyncHandler(async (req, res) => {
     const {userId} = req.user
-    const {month, year} = req.query
+    const {month, year, category, priority} = req.query
 
     if(!month || !year){
         throw new ApiError(400, "Month and year are Required")
