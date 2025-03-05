@@ -3,7 +3,8 @@ import {ApiError} from "../utils/apiError.js";
 import {Task} from "../models/task.model.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
-
+import { updateTaskHistory } from "../middlewares/taskHistory.middleware.js";
+ 
 
 //Created Task
 const createTask = asyncHandler(async (req, res) => {
@@ -25,6 +26,8 @@ const createTask = asyncHandler(async (req, res) => {
         priority,
         owner: userId // ✅ Assign correct owner
     });
+
+    await updateTaskHistory(req, res, next);
 
     return res.status(201).json(
         new ApiResponse(
@@ -55,6 +58,8 @@ const updateTask = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Task not found");
     }
 
+    await updateTaskHistory(req, res, next);
+
     return res.status(200).json(
         new ApiResponse(
             200,
@@ -78,6 +83,8 @@ const deleteTask = asyncHandler(async(req, res) => {
     if(!deletedTask){
         throw new ApiError(404, "Task not found")
     }
+
+    await updateTaskHistory(req, res, next);
 
     return res
     .status(200)
@@ -112,6 +119,8 @@ const markTaskAsComplete = asyncHandler(async (req, res) => {
     if(!task){
         throw new ApiError(404, "Task not Found")
     }
+
+    await updateTaskHistory(req, res, next);
 
     return res
     .status(200)
@@ -196,6 +205,8 @@ const rescheduleTask = asyncHandler(async(req, res) => {
     ])
 
     const tasks = await Task.aggregatePaginate(aggregateQuery, {page, limit})
+
+    await updateTaskHistory(req, res, next);
 
     return res
     .status(200)

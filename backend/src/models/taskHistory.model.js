@@ -9,7 +9,7 @@ const taskHistorySchema = new Schema({
         index: true
     },
     date: {
-        type: Date,
+        type: Date, 
         required: true,
         index: true
     },
