@@ -29,4 +29,4 @@ const noteSchema = new Schema({
     ]
 }, {timestamps: true})
 
-export const Note = mongoose.model("Note", noteSchema);
+export const Note = mongoose.model("Note", noteSchema); 
