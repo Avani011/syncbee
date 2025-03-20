@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* .bg{
+  @apply bg-radial from-white from-0% to-[#B68FD6] to-100%
+} */
+.bg-syncbee {
+  @apply relative h-screen w-full;
+  background: 
+    linear-gradient(rgba(219, 220, 148, 0.41), rgba(219, 220, 148, 0.41)),
+    radial-gradient(circle, white 0%, #B68FD6 100%);
+}
