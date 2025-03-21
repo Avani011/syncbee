@@ -1,3 +1,4 @@
+'use client'
 import Link from "next/link"
 
 const Task = () => {
@@ -46,19 +47,39 @@ const Task = () => {
             </div>
             <div className="flex flex-row w-full gap-8 px-4 py-3">
                 <div className="flex flex-row w-1/2 justify-between p-3 shadow-md rounded-md">
-                    <h1 className="text-lg font-medium text-purple-800">Task1</h1>
+                    <div className="flex items-center gap-2">
+                        <input 
+                            type="checkbox" 
+                            id="task1-checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 peer"
+                            onChange={(e) => {
+                                // You can add additional logic here if needed
+                            }}
+                        />
+                        <h1 className="text-lg font-medium text-purple-800 peer-checked:line-through peer-checked:text-gray-500 transition-all">Task1</h1>
+                    </div>
                     <div className="flex flex-row gap-3">
                         <div className="flex justify-center items-center rounded-lg p-1.5 bg-purple-400">
-                        <h1 className="text-black text-xs">High</h1>
+                            <h1 className="text-black text-xs">High</h1>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex flex-row w-1/2 justify-between p-3 shadow-md rounded-md">
-                    <h1 className="text-lg font-medium text-purple-800">Task2</h1>
+                    <div className="flex items-center gap-2">
+                        <input 
+                            type="checkbox" 
+                            id="task2-checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 peer"
+                            onChange={(e) => {
+                                // You can add additional logic here if needed
+                            }}
+                        />
+                        <h1 className="text-lg font-medium text-purple-800 peer-checked:line-through peer-checked:text-gray-500 transition-all">Task2</h1>
+                    </div>
                     <div className="flex flex-row gap-3">
                         <div className="flex justify-center items-center rounded-lg p-1.5 bg-purple-400">
-                        <h1 className="text-black text-xs">High</h1>
+                            <h1 className="text-black text-xs">High</h1>
                         </div>
                     </div>
                 </div>

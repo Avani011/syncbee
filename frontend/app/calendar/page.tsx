@@ -1,9 +1,10 @@
+import CalendarView from '@/components/calendar/CalendarView'
 import React from 'react'
 
 const Calendar = () => {
   return (
-    <div>
-      
+    <div className='h-[100%]'>
+      <CalendarView />
     </div>
   )
 }
