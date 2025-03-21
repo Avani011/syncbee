@@ -1,11 +1,28 @@
 @import "tailwindcss";
 
-/* .bg{
-  @apply bg-radial from-white from-0% to-[#B68FD6] to-100%
-} */
 .bg-syncbee {
   @apply relative h-screen w-full;
   background: 
     linear-gradient(rgba(219, 220, 148, 0.41), rgba(219, 220, 148, 0.41)),
     radial-gradient(circle, white 0%, #B68FD6 100%);
+}
+
+.d-main{
+  @apply flex flex-col rounded-l-3xl h-full w-full;
+  background: linear-gradient(rgba(217, 217, 217, 0.44), rgba(217, 217, 217, 0.44));
+  box-shadow: -3px 3px 4.5px 2px rgba(122, 96, 143, 0.474);
+}
+
+.bar-bg{
+  background: linear-gradient(rgba(217, 217, 217, 0.81), rgba(217, 217, 217, 0.81));
+  box-shadow: 0px 4px 4px 0px rgba(160, 144, 173, 0.81);
+}
+
+.content-bg{
+  background: linear-gradient(rgba(255, 255, 255, 0.21), rgba(255, 255, 255, 0.21));
+}
+
+.plus-btn{
+  background: linear-gradient(rgba(206, 193, 200), rgba(206, 193, 200));
+  box-shadow: -3px -2px 2.5px 2px  rgba(122, 96, 143);
 }
