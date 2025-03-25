@@ -1,5 +1,6 @@
 import NoteCard from '@/components/notes/NoteCard'
 import React from 'react'
+import VoiceNoteCard from './VoiceNoteCard'
 
 const Note = () => {
   return (
@@ -11,10 +12,10 @@ const Note = () => {
         </div>
       </div>
 
-      <div className='flex flex-col gap-5 w-1/2 h-full shadow-md rounded-lg p-4'>
+      <div className='flex flex-col gap-5 h-full shadow-md rounded-lg p-4'>
         <h1 className='flex justify-center text-xl text-center text-[#54405e] font-bold'>Voice Notes</h1>
         <div className='flex flex-row gap-3'>
-            
+            <VoiceNoteCard />
         </div>
       </div>
     </div>

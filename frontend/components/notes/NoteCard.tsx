@@ -193,7 +193,7 @@ const NoteCard = ({ initialNote = {
 // Example of how to use it in a parent component
 export default function NotesContainer() {
   return (
-    <div className="flex flex-wrap gap-4 p-4">
+    <div className="flex flex-wrap justify-center gap-6 p-4">
       <NoteCard initialNote={{ 
         id: "note1", 
         title: "Project Meeting", 
