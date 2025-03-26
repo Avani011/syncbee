@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Nav = () => {
   return (
@@ -16,19 +17,30 @@ const Nav = () => {
             />
         </div>
 
-        <Image 
-            src='/percentage.svg'
-            alt='percentage-icon'
-            height={35}
-            width={35}
-        />
+        <div className='flex flex-row gap-10'>
+            <Image 
+                src='/percentage.svg'
+                alt='percentage-icon'
+                height={35}
+                width={35}
+            />
 
-        <Image 
-            src='/notification.svg'
-            alt='notification-icon'
-            height={35}
-            width={35}
-        />
+            <Link href='/dashboard/settings'>
+                <Image 
+                    src='/settings.svg'
+                    alt='settings-icon'
+                    height={35}
+                    width={35}
+                />
+            </Link>
+
+            <Image 
+                src='/notification.svg'
+                alt='notification-icon'
+                height={35}
+                width={35}
+            />
+        </div>
     </div>
   )
 }

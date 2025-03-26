@@ -6,7 +6,7 @@ const Sidebar = () => {
     <div className='flex flex-col justify-between items-center w-44 py-8'>
  
       <div className="w-[100%] flex justify-center">
-        <Link href="/">
+        <Link href="/dashboard/profile">
           <Image
             src="/profile.svg"
             alt="profile-icon"
@@ -17,7 +17,7 @@ const Sidebar = () => {
       </div>
 
       <div className="w-[100%] flex justify-center">
-        <Link href="/">
+        <Link href="/dashboard/task">
           <Image
             src="/task.svg"
             alt="task-icon"
@@ -28,7 +28,7 @@ const Sidebar = () => {
       </div>
 
       <div className="w-[100%] flex justify-center">
-        <Link href="/">
+        <Link href="/dashboard/calendar">
           <Image
             src="/calendar.svg"
             alt="calendar-icon"
@@ -39,7 +39,7 @@ const Sidebar = () => {
       </div>
 
       <div className="w-[100%] flex justify-center">
-        <Link href="/">
+        <Link href="/dashboard/notes">
           <Image
             src="/notes.svg"
             alt="notes-icon"
@@ -50,7 +50,7 @@ const Sidebar = () => {
       </div>
 
       <div className="w-[100%] flex justify-center">
-        <Link href="/">
+        <Link href="/dashboard/focus">
           <Image
             src="/focus.svg"
             alt="focus-icon"

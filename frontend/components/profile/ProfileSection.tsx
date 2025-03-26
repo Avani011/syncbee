@@ -60,7 +60,7 @@ const ProfileSection: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 w-full">
+    <div className="bg-white rounded-lg shadow-md w-full">
       <div className="flex justify-between items-end mb-6">
         <button
           onClick={handleEditToggle}
