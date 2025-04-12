@@ -1,4 +1,3 @@
-// components/Calendar/Calendar.tsx
 'use client';
 
 import { useState, useRef } from 'react';
@@ -6,9 +5,9 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import CalendarFilter from './CalendarFilter';
-import CalendarTask from './CalendarTask';
+import TaskDetail from '../task/TaskDetail';
+import CreateTaskModal from '../task/CreateTask'; // ✅ import CreateTaskModal
 
-// Dummy data for tasks
 const DUMMY_TASKS = [
   {
     id: '1',
@@ -45,23 +44,24 @@ export default function Calendar() {
   const [selectedPriorities, setSelectedPriorities] = useState(['high', 'medium', 'low']);
   const [selectedTask, setSelectedTask] = useState(null);
   const [tasks, setTasks] = useState(DUMMY_TASKS);
+  const [showCreateModal, setShowCreateModal] = useState(false); // ✅ for create modal
+  const [selectedDate, setSelectedDate] = useState(''); // ✅ for clicked calendar date
+
   const calendarRef = useRef(null);
 
-  // Map tasks to calendar events
   const getCalendarEvents = () => {
     return tasks
-      .filter(task => 
-        selectedCategories.includes(task.category) && 
+      .filter(task =>
+        selectedCategories.includes(task.category) &&
         selectedPriorities.includes(task.priority)
       )
       .map(task => {
-        // Set color based on priority and category
         const priorityColors = {
-          high: '#ef4444',   // Red
-          medium: '#f59e0b', // Amber
-          low: '#10b981'     // Green
+          high: '#ef4444',
+          medium: '#f59e0b',
+          low: '#10b981'
         };
-        
+
         return {
           id: task.id,
           title: task.title,
@@ -83,7 +83,6 @@ export default function Calendar() {
       });
   };
 
-  // Handle task click
   const handleEventClick = (info) => {
     const taskId = info.event.id;
     const task = tasks.find(t => t.id === taskId);
@@ -92,7 +91,12 @@ export default function Calendar() {
     }
   };
 
-  // Handle filter changes
+  // ✅ handle date click
+  const handleDateClick = (arg: { dateStr: string }) => {
+    setSelectedDate(arg.dateStr); // dateStr is in format YYYY-MM-DD
+    setShowCreateModal(true);
+  };
+
   const handleCategoryFilterChange = (categories) => {
     setSelectedCategories(categories);
   };
@@ -112,7 +116,7 @@ export default function Calendar() {
             onPriorityChange={handlePriorityFilterChange}
           />
         </div>
-        
+
         <div className="flex-grow calendar-container" style={{ maxHeight: 'calc(100vh - 200px)' }}>
           <FullCalendar
             ref={calendarRef}
@@ -126,6 +130,7 @@ export default function Calendar() {
             events={getCalendarEvents()}
             height="490px"
             eventClick={handleEventClick}
+            dateClick={handleDateClick} // ✅ enable date click
             eventDisplay="block"
             eventMaxStack={2}
             dayMaxEventRows={2}
@@ -140,12 +145,28 @@ export default function Calendar() {
 
       {/* Task Detail Modal */}
       {selectedTask && (
-        <CalendarTask 
-          task={selectedTask} 
-          onClose={() => setSelectedTask(null)} 
+        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center p-4">
+          <TaskDetail
+            title={selectedTask.title}
+            description={selectedTask.description}
+            priority={selectedTask.priority}
+            type={selectedTask.category}
+            subtasks={selectedTask.subtasks || []}
+            onClose={() => setSelectedTask(null)}
+          />
+        </div>
+      )}
+
+
+      {/* ✅ Create Task Modal on date click */}
+      {showCreateModal && (
+        <CreateTaskModal
+          onClose={() => setShowCreateModal(false)}
+          defaultStartDate={selectedDate}
         />
       )}
 
+      {/* Styling kept as-is */}
       <style jsx global>{`
         .fc-theme-standard {
           font-family: inherit;
@@ -160,8 +181,10 @@ export default function Calendar() {
           border-color: #f3f4f6;
         }
 
-        .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid {
-            border: 1px solid white;
+        .fc-theme-standard td,
+        .fc-theme-standard th,
+        .fc-theme-standard .fc-scrollgrid {
+          border: 1px solid white;
         }
 
         .fc-day-today {
@@ -174,22 +197,22 @@ export default function Calendar() {
           color: #54405e;
         }
 
-        .fc-header-toolbar{
-            margin-bottom: 1px
+        .fc-header-toolbar {
+          margin-bottom: 1px;
         }
 
-        .fc .fc-col-header-cell-cushion{
-            color: #6e11b0
+        .fc .fc-col-header-cell-cushion {
+          color: #6e11b0;
         }
 
-        .fc .fc-toolbar-title{
-            color: #54405e;
-            font-weight: bold;
+        .fc .fc-toolbar-title {
+          color: #54405e;
+          font-weight: bold;
         }
 
-        .fc .fc-button-primary{
-            border: none;
-            background-color: #54405e;
+        .fc .fc-button-primary {
+          border: none;
+          background-color: #54405e;
         }
 
         .fc-event {

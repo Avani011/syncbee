@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { FaEdit, FaTimes } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
+import { IoClose } from 'react-icons/io5';
 
 interface Subtask {
   id: string;
@@ -15,7 +16,7 @@ interface TaskDetailProps {
   priority: 'High' | 'Medium' | 'Low';
   type: string;
   subtasks?: Subtask[];
-  onEdit?: () => void;
+  onEdit?: (updates: { title: string; description: string }) => void;
   onAddSubtask?: (title: string) => void;
   onClose?: () => void;
 }
@@ -28,12 +29,12 @@ const TaskDetail: React.FC<TaskDetailProps> = ({
   subtasks = [],
   onEdit,
   onAddSubtask,
-  onClose,
+  onClose
 }) => {
   const [checkedSubtasks, setCheckedSubtasks] = useState(subtasks);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(title);
-  const [editDescription, setEditDescription] = useState(description);
+  const [editing, setEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(title);
+  const [editedDescription, setEditedDescription] = useState(description);
   const [newSubtask, setNewSubtask] = useState('');
 
   const handleSubtaskToggle = (id: string) => {
@@ -44,12 +45,14 @@ const TaskDetail: React.FC<TaskDetailProps> = ({
   };
 
   const handleAddSubtask = () => {
-    if (newSubtask.trim() !== '' && onAddSubtask) {
-      onAddSubtask(newSubtask.trim());
-      setCheckedSubtasks([
-        ...checkedSubtasks,
-        { id: String(Date.now()), title: newSubtask.trim(), isComplete: false },
-      ]);
+    if (newSubtask.trim()) {
+      const newSubtaskObj: Subtask = {
+        id: Date.now().toString(),
+        title: newSubtask.trim(),
+        isComplete: false,
+      };
+      setCheckedSubtasks((prev) => [...prev, newSubtaskObj]);
+      onAddSubtask?.(newSubtask.trim());
       setNewSubtask('');
     }
   };
@@ -59,66 +62,63 @@ const TaskDetail: React.FC<TaskDetailProps> = ({
   const percentComplete = total > 0 ? (completed / total) * 100 : 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-md flex justify-center items-center">
-      <div className="relative bg-white/40 w-full max-w-xl p-6 rounded-xl shadow-lg border overflow-y-auto">
-        {/* Top Progress Fill */}
-        <div
-          className="absolute top-0 left-0 h-1 bg-purple-500 rounded-t-xl"
-          style={{ width: `${percentComplete}%` }}
-        />
+    <div className="relative bg-white p-6 rounded-xl shadow-lg w-full max-w-xl mx-auto mt-6">
+      {/* Progress Fill Border */}
+      <div
+        className="absolute top-0 left-0 h-1 rounded-t-xl bg-purple-400 transition-all"
+        style={{ width: `${percentComplete}%` }}
+      />
 
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 bg-purple-200 hover:bg-purple-300 text-purple-800 px-2 py-1 rounded text-xs"
-        >
-          <FaTimes />
-        </button>
-
-        {/* Title & Edit */}
-        <div className="flex justify-between items-start mb-4">
-          {isEditing ? (
-            <input
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-              className="text-xl font-bold text-purple-900 bg-transparent border-b border-purple-500 focus:outline-none"
-            />
-          ) : (
-            <h2 className="text-2xl font-bold text-purple-900">{editTitle}</h2>
-          )}
-
-          <button onClick={() => setIsEditing((prev) => !prev)}>
-            <FaEdit className="text-purple-700 hover:text-purple-900 text-lg" />
-          </button>
-        </div>
-
-        {/* Meta Info */}
-        <div className="flex gap-4 mb-2">
-          <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
-            {priority}
-          </span>
-          <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
-          {typeof type === 'string' ? type.charAt(0).toUpperCase() + type.slice(1) : ''}
-
-          </span>
-        </div>
-
-        {/* Description */}
-        {isEditing ? (
-          <textarea
-            value={editDescription}
-            onChange={(e) => setEditDescription(e.target.value)}
-            className="w-full bg-transparent border border-purple-300 text-sm text-purple-800 p-2 rounded mb-4"
-            rows={3}
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        {editing ? (
+          <input
+            type="text"
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            className="text-2xl font-bold text-purple-900 bg-transparent outline-none border-b border-purple-200"
           />
         ) : (
-          <p className="text-sm text-gray-700 mb-4">{editDescription}</p>
+          <h2 className="text-2xl font-bold text-purple-900">{title}</h2>
         )}
 
-        {/* Subtasks */}
-        <div>
-          <h3 className="text-sm font-semibold text-purple-800 mb-2">Subtasks</h3>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setEditing(!editing)}>
+            <FaEdit className="text-purple-700 hover:text-purple-900 text-lg" />
+          </button>
+          <button onClick={onClose}>
+            <IoClose className="text-purple-700 hover:text-purple-900 text-xl" />
+          </button>
+        </div>
+      </div>
 
+      {/* Meta Info */}
+      <div className="flex gap-4 mb-2">
+        <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-xs font-medium">
+          {priority}
+        </span>
+        <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+          {type?.charAt(0).toUpperCase() + type?.slice(1)}
+        </span>
+      </div>
+
+      {/* Description */}
+      {editing ? (
+        <textarea
+          value={editedDescription}
+          onChange={(e) => setEditedDescription(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg p-2 text-sm text-gray-700 mb-4"
+          rows={3}
+        />
+      ) : (
+        <p className="text-sm text-gray-700 mb-4">{description}</p>
+      )}
+
+      {/* Subtasks */}
+      <div>
+        <h3 className="text-sm font-semibold text-purple-800 mb-2">Subtasks</h3>
+
+        {checkedSubtasks.length > 0 && (
           <div className="flex flex-col gap-2 mb-3">
             {checkedSubtasks.map((subtask) => (
               <label key={subtask.id} className="flex items-center gap-2">
@@ -138,23 +138,23 @@ const TaskDetail: React.FC<TaskDetailProps> = ({
               </label>
             ))}
           </div>
+        )}
 
-          {/* Subtask Input */}
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newSubtask}
-              onChange={(e) => setNewSubtask(e.target.value)}
-              placeholder="New subtask"
-              className="w-full px-3 py-2 text-sm rounded border bg-white/80 placeholder:text-purple-300"
-            />
-            <button
-              onClick={handleAddSubtask}
-              className="px-3 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
-            >
-              Add
-            </button>
-          </div>
+        {/* Add Subtask Input */}
+        <div className="flex items-center gap-2 mt-2">
+          <input
+            type="text"
+            placeholder="Add new subtask"
+            value={newSubtask}
+            onChange={(e) => setNewSubtask(e.target.value)}
+            className="flex-grow border border-gray-300 rounded-md px-3 py-1 text-sm"
+          />
+          <button
+            onClick={handleAddSubtask}
+            className="bg-purple-500 text-white px-4 py-1.5 rounded-md text-sm hover:bg-purple-600"
+          >
+            Add
+          </button>
         </div>
       </div>
     </div>
