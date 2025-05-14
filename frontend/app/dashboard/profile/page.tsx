@@ -6,13 +6,14 @@ import PerformanceMetrics from '@/components/profile/PerformanceMetrics';
 
 const ProfilePage: React.FC = () => {
   return (
-    <div className="w-full flex items-center px-4 py-4">
-      
-      <div className="flex flex-row w-full gap-6 justify-center items-center">
-        <div className="w-1/2">
+    <div className="flex flex-col gap-6 w-full h-full">
+      <h1 className="text-2xl font-bold text-purple-900">Profile</h1>
+
+      <div className="flex flex-row gap-6 w-full">
+        <div className="flex-1 max-w-[600px]">
           <ProfileSection />
         </div>
-        <div className="w-1/2">
+        <div className="flex-1 max-w-[600px]">
           <PerformanceMetrics />
         </div>
       </div>

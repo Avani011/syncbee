@@ -26,3 +26,14 @@
   background: linear-gradient(rgba(206, 193, 200), rgba(206, 193, 200));
   box-shadow: -3px -2px 2.5px 2px  rgba(122, 96, 143);
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}

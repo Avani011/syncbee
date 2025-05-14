@@ -4,12 +4,13 @@ import {ApiResponse} from "../utils/ApiResponse.js";
 import { Note } from "../models/note.model.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js";
 import mongoose from "mongoose";
+import fs from "fs";
 
 //Create a New Note
 const createNote = asyncHandler(async(req, res) => {
     const {title, description, checklist} = req.body
 
-    const {userId} = req.user._id
+    const userId = req.user._id
     if(!mongoose.Types.ObjectId.isValid(userId)){
         throw new ApiError(404, "Invalid User Id")
     }
@@ -28,7 +29,9 @@ const createNote = asyncHandler(async(req, res) => {
                 throw new ApiError(404, "Unable to upload All Images")
             }
 
-            fs.unlinkSync(file.path);
+            if (fs.existsSync(file.path)) { 
+                fs.unlinkSync(file.path);
+            }
         }
     }
 
@@ -53,7 +56,7 @@ const createNote = asyncHandler(async(req, res) => {
             "Notes Created Successfully"
         )
     )
-})
+}) 
 
 //Fetch All Notes
 const getAllNotes = asyncHandler(async (req, res) => {

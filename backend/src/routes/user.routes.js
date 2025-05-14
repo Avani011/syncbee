@@ -16,7 +16,7 @@ router.route("/register").post(
 );
 
 router.route("/login").post(loginUser);
-router.route("/current-user").get(getCurrentUser);
+router.route("/current-user").get(verifyJWT, getCurrentUser);
 
 //secured routes
 router.route("/logout").post(verifyJWT, logoutUser);
@@ -26,4 +26,4 @@ router.route("/update-user").post(verifyJWT, updateAccountDetails);
 
 router.post("/update-avatar", verifyJWT, upload.single("avatar"), updateAvatar);
 
-export default router;
+export default router; 

@@ -1,175 +1,86 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { getCurrentUser } from '@/services/user';
+import EditProfileModal from './EditProfileModal';
 
-// Define TypeScript interfaces
 interface ProfileData {
   username: string;
   fullName: string;
   email: string;
   phone: string;
-  photoUrl: string;
+  avatar: string;
 }
 
 const ProfileSection: React.FC = () => {
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [profileData, setProfileData] = useState<ProfileData>({
-    username: 'productivity_master',
-    fullName: 'Alex Johnson',
-    email: 'alex.johnson@example.com',
-    phone: '(555) 123-4567',
-    photoUrl: 'https://i.pravatar.cc/150?img=12',
-  });
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const [tempProfileData, setTempProfileData] = useState<ProfileData>({ ...profileData });
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await getCurrentUser();
+        setProfileData(res.data.data);
+      } catch (err) {
+        console.error('Failed to load user', err);
+      }
+    };
 
-  const handleEditToggle = (): void => {
-    if (isEditing) {
-      // Save changes
-      setProfileData({ ...tempProfileData });
-    } else {
-      // Start editing
-      setTempProfileData({ ...profileData });
-    }
-    setIsEditing(!isEditing);
-  };
+    fetchUser();
+  }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    setTempProfileData({
-      ...tempProfileData,
-      [name]: value,
-    });
-  };
-
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    // In a real app, you would handle file upload to your backend/storage here
-    // For now, we'll just simulate a local preview
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setTempProfileData({
-          ...tempProfileData,
-          photoUrl: reader.result as string,
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  if (!profileData) return <p className="text-center">Loading...</p>;
 
   return (
-    <div className="bg-white rounded-lg shadow-md w-full">
-      <div className="flex justify-between items-end mb-6">
-        <button
-          onClick={handleEditToggle}
-          className={`px-4 py-2 rounded-md ${
-            isEditing
-              ? 'bg-green-500 hover:bg-green-600 text-white'
-              : 'bg-purple-500 hover:bg-purple-600 text-white'
-          }`}
-        >
-          {isEditing ? 'Save' : 'Edit Profile'}
-        </button>
-      </div>
+    <>
+      <div className="bg-white rounded-lg shadow-md p-4 w-full relative">
+        <div className="flex justify-between mb-4">
+          <button onClick={() => setIsEditing(true)} title="Edit">
+            <Image src="/edit.svg" alt="Edit" width={24} height={24} />
+          </button>
+        </div>
 
-      <div className="flex flex-col items-center justify-center w-full gap-5">
-        {/* Left column - Photo and username */}
-        <div className="flex flex-col items-center w-full mb-6 md:mb-0">
-          <div className=" w-[150px] rounded-full overflow-hidden mb-3 ring-2 ring-purple-300">
+        <div className="flex flex-col items-center space-y-8">
+          <div className="relative w-32 h-32 rounded-full overflow-hidden ring-2 ring-purple-300">
             <Image
-            //   src={isEditing ? tempProfileData.photoUrl : profileData.photoUrl}
-                src='/profile.svg'
-              alt="Profile"
-              className="w-full h-full object-cover"
-              width={400}
-              height={400}
+              src={profileData.avatar || '/profile.svg'}
+              alt="Avatar"
+              fill
+              className="object-cover"
+              unoptimized
             />
-            {isEditing && (
-              <label
-                htmlFor="photo-upload"
-                className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center cursor-pointer transition-opacity hover:bg-opacity-70"
-              >
-                <span className="text-white text-xs font-medium">Change</span>
-                <input
-                  id="photo-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handlePhotoChange}
-                />
-              </label>
-            )}
-          </div>
-        </div>
-
-        {/* Right column - Profile details */}
-        <div className="w-[90%] flex items-center flex-col">
-          <div className="mb-4 w-full flex flex-row justify-between">
-            <label className="flex text-sm font-medium text-gray-600">Username</label>
-            {isEditing ? (
-              <input
-                type="text"
-                name="username"
-                value={tempProfileData.username}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 ring-1 ring-gray-200 px-3 py-2"
-              />
-            ) : (
-              <div className="mt-1 text-gray-900">{profileData.username}</div>
-            )}
           </div>
 
-          <div className="mb-4 w-full flex flex-row justify-between gap-16">
-            <label className="block text-sm font-medium text-gray-600">Full Name</label>
-            {isEditing ? (
-              <input
-                type="text"
-                name="fullName"
-                value={tempProfileData.fullName}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 ring-1 ring-gray-200 px-3 py-2"
-              />
-            ) : (
-              <div className="mt-1 text-gray-900">{profileData.fullName}</div>
-            )}
-          </div>
-
-          <div className="mb-4 w-full flex flex-row justify-between gap-16">
-            <label className="block text-sm font-medium text-gray-600">Email</label>
-            {isEditing ? (
-              <input
-                type="email"
-                name="email"
-                value={tempProfileData.email}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 ring-1 ring-gray-200 px-3 py-2"
-              />
-            ) : (
-              <div className="mt-1 text-gray-900 truncate" title={profileData.email}>
-                {profileData.email}
-              </div>
-            )}
-          </div>
-
-          <div className="mb-4 w-full flex flex-row justify-between gap-16">
-            <label className="block text-sm font-medium text-gray-600">Phone (Optional)</label>
-            {isEditing ? (
-              <input
-                type="tel"
-                name="phone"
-                value={tempProfileData.phone}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 ring-1 ring-gray-200 px-3 py-2"
-              />
-            ) : (
-              <div className="mt-1 text-gray-900">{profileData.phone || '-'}</div>
-            )}
+          <div className="text-left flex flex-col gap-4 w-full max-w-md">
+            <div className='flex flex-row justify-between'>
+              <p><strong>Username:</strong></p>  
+              <p> {profileData.username}</p>
+            </div>
+            <div className='flex flex-row justify-between'>
+              <p><strong>Full Name:</strong></p>  
+              <p>{profileData.fullName}</p>
+            </div>
+            <div className='flex flex-row justify-between'>
+              <p><strong>Email:</strong></p>  
+              <p>{profileData.email}</p>
+            </div>
+            <div className='flex flex-row justify-between'>
+              <p><strong>Phone:</strong></p>  
+              <p>{profileData?.phone || '-'}</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {isEditing && (
+        <EditProfileModal
+          user={profileData}
+          onClose={() => setIsEditing(false)}
+          onUpdate={(updatedUser) => setProfileData(updatedUser)} // ✅ this line
+        />      
+      )}
+    </>
   );
 };
 

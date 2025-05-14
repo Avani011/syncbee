@@ -10,4 +10,4 @@ router.route("/start-focus").put(verifyJWT, startFocus)
 router.route("/fetch-focusHistory").get(verifyJWT, getFocusHistory)
 router.route("/delete-focus/:focusId").delete(verifyJWT, ownership(Focus, "focusId"), deleteFocus)
 
-export default router;
+export default router;   

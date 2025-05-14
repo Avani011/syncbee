@@ -136,10 +136,10 @@ const PerformanceMetrics: React.FC = () => {
     return () => {
       chartContainer.removeEventListener('wheel', handleWheel);
     };
-  }, []);
+  }, []); 
 
   return (
-    <div className="bg-white rounded-lg shadow-md w-full">
+    <div className="bg-white rounded-lg shadow-md p-4 w-full">
       {/* All filters in one row */}
       <div className="flex flex-wrap items-center justify-between mb-6">
         {/* Date Range Selector */}

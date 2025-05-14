@@ -4,7 +4,7 @@ import Task from '@/components/task/Task'
 
 const TaskPage = () => {
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col w-full'>
       <DateScroller />
       <Task />
     </div>

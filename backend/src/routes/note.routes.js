@@ -16,4 +16,4 @@ router.route("/delete-note/:noteId").delete(verifyJWT, ownership(Note, "noteId")
 
 router.route("update-checklist/:noteId/:checklistIndex").patch(verifyJWT, ownership(Note, "noteId"), toggleChecklist)
 
-export default router;
+export default router; 

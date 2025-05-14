@@ -37,7 +37,7 @@ const Task = () => {
           defaultCategory="work"
           onSelect={(cat) => {
             setSelectedCategory(cat);
-            setSelectedTaskId(null); // Reset task detail view when changing category
+            setSelectedTaskId(null); //  task detail view when changing category
           }}
         />
 

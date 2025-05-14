@@ -14,4 +14,4 @@ const focusSchema = new Schema({
 
 focusSchema.index({ createdAt: 1 }, { expireAfterSeconds: 172800 });
 
-export const Focus = mongoose.model("Focus", focusSchema);
+export const Focus = mongoose.model("Focus", focusSchema); 
