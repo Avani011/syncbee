@@ -78,13 +78,7 @@ export default function CreateNoteModal({ onClose }: Props) {
   
     formData.append('title', title);
     formData.append('description', description);
-  
-    checklist.forEach((item) => {
-      formData.append('checklist', JSON.stringify({
-        item: item.item,
-        isTicked: item.isTicked
-      }));
-    });
+    formData.append('checklist', JSON.stringify(checklist));
   
     const fileInput = fileInputRef.current;
     if (fileInput && fileInput.files) {

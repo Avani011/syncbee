@@ -35,12 +35,29 @@ const createNote = asyncHandler(async(req, res) => {
         }
     }
 
+    let parsedChecklist = checklist;
+
+        // ✅ Check if it's a string and parse it
+        if (typeof checklist === 'string') {
+        try {
+            parsedChecklist = JSON.parse(checklist);
+        } catch (e) {
+            console.error("❌ Failed to parse checklist:", checklist);
+            parsedChecklist = [];
+        }
+        }
+
+        // ✅ Ensure it's an array
+        if (!Array.isArray(parsedChecklist)) {
+        parsedChecklist = [];
+    }
+
     const note = await Note.create({
         title,
         description,
         owner: userId,
         pictures: imageUrls,
-        checklist: checklist ? JSON.parse(checklist) : []
+        checklist: parsedChecklist
     })
 
     if(!note){
@@ -61,7 +78,7 @@ const createNote = asyncHandler(async(req, res) => {
 //Fetch All Notes
 const getAllNotes = asyncHandler(async (req, res) => {
 
-    const {userId} = req.user._id
+    const userId = req.user._id
     if(!mongoose.Types.ObjectId.isValid(userId)){
         throw new ApiError(404, "Invalid User Id")
     }
@@ -92,7 +109,7 @@ const getNoteById = asyncHandler(async(req, res) => {
         throw new ApiError(404, "Invalid Note Id")
     }
 
-    const {userId} = req.user._id
+    const userId = req.user._id
     if(!mongoose.Types.ObjectId.isValid(userId)){
         throw new ApiError(404, "Invalid User Id")
     }
@@ -117,45 +134,73 @@ const getNoteById = asyncHandler(async(req, res) => {
 })
 
 //Update a Note
-const updateNote = asyncHandler(async(req, res) => {
-    const {noteId} = req.params
-    if(!mongoose.Types.ObjectId.isValid(noteId)){
-        throw new ApiError(404, "Invalid Note Id")
+const updateNote = asyncHandler(async (req, res) => {
+  const { noteId } = req.params;
+  const userId = req.user._id;
+
+  if (!mongoose.Types.ObjectId.isValid(noteId)) {
+    throw new ApiError(404, "Invalid Note ID");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(404, "Invalid User ID");
+  }
+
+  // Incoming fields
+  const { title, description, checklist } = req.body;
+  let parsedChecklist = [];
+
+  try {
+    parsedChecklist = checklist ? JSON.parse(checklist) : [];
+  } catch (e) {
+    console.error("Checklist JSON parsing error:", e);
+  }
+
+  // Handle old images (string URLs)
+  let finalImages = [];
+
+if (req.body.existingImages) {
+  if (typeof req.body.existingImages === 'string') {
+    finalImages = [req.body.existingImages];
+  } else if (Array.isArray(req.body.existingImages)) {
+    finalImages = req.body.existingImages;
+  }
+}
+
+if (req.files && req.files.length > 0) {
+  for (let file of req.files) {
+    const uploaded = await uploadOnCloudinary(file.path);
+    if (uploaded?.url) {
+      finalImages.push(uploaded.url);
     }
+    fs.unlinkSync(file.path);
+  }
+}
+console.log("Final Images:", finalImages);
 
-    const {userId} = req.user._id
-    if(!mongoose.Types.ObjectId.isValid(userId)){
-        throw new ApiError(404, "Invalid User Id")
-    }
+ const updatedNote = await Note.findOneAndUpdate(
+  { _id: noteId, owner: userId },
+  {
+    title,
+    description,
+    checklist: parsedChecklist,
+    pictures: finalImages
+  },
+  { new: true }
+);
 
-    const {title, description, checklist} = req.body
+  if (!updatedNote) {
+    throw new ApiError(400, "Unable to update note");
+  }
 
-    const updateNote = await Note.findByIdAndUpdate(
-        {_id: noteId, owner: userId},
-        {
-            title, 
-            description,
-            checklist: checklist ? JSON.parse(checklist) : undefined
-        },
-        {
-            new: true
-        }
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedNote,
+      "Note updated successfully"
     )
-
-    if(!updateNote){
-        throw new ApiError(400, " Unable to Update a Note ")
-    }
-
-    return res
-    .status(201)
-    .json(
-        new ApiResponse(
-            200,
-            updateNote,
-            "Note Updated Successfully"
-        )
-    )
-})
+  );
+});
 
 //Deelete a Note
 const deleteNote = asyncHandler(async(req, res) => {
@@ -164,7 +209,7 @@ const deleteNote = asyncHandler(async(req, res) => {
         throw new ApiError(404, "Invalid Note Id")
     }
 
-    const {userId} = req.user._id
+    const userId = req.user._id
     if(!mongoose.Types.ObjectId.isValid(userId)){
         throw new ApiError(404, "Invalid User Id")
     }
@@ -194,7 +239,7 @@ const toggleChecklist = asyncHandler(async(req, res) => {
         throw new ApiError(404, "Invalid Note Id")
     }
 
-    const {userId} = req.body._id
+    const userId = req.user._id
     if(!mongoose.Types.ObjectId.isValid(userId)){
         throw new ApiError(404, "Invalid User Id")
     }

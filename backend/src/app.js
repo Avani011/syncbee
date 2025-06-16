@@ -4,24 +4,28 @@ import cookieParser from 'cookie-parser';
 
 const app = express();
 
-// ✅ CORS Configuration
 const corsOptions = {
-  origin: 'http://localhost:3000',       // your frontend
-  credentials: true,                     // allow cookies
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],  // necessary
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); // Apply CORS globally
+app.options('*', cors(corsOptions)); // ✅ Handle preflight for ALL routes
 
-
-// ✅ These middlewares should follow after CORS
+// ✅ 2. MIDDLEWARES
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
-app.use(express.static('public'));
 app.use(cookieParser());
+app.use(express.static('public'));
 
-// ✅ Don't manually override headers again (let `cors()` do it)
+// ✅ 3. DEBUG LOGGING (optional)
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.originalUrl}`);
+  next();
+});
+
 
 // ROUTES
 import userRouter from './routes/user.routes.js';
